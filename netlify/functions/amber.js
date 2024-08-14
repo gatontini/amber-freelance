@@ -12,24 +12,25 @@ exports.handler = async function(event, context) {
     Amber:`;
 
     try {
-       const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-    },
-    body: JSON.stringify({
-        model: "gpt-3.5-turbo", // Passa a GPT-3.5-turbo
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 200 // Puoi mantenere un numero di token simile
-    })
-});
-
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: "gpt-3.5-turbo", // Modello utilizzato
+                messages: [{ role: "user", content: prompt }],
+                max_tokens: 400, // Aumenta il numero di token a 400
+                temperature: 0.7, // Temperatura per controllare la creatività della risposta
+                top_p: 0.9 // Controlla la diversità delle risposte
+            })
+        });
 
         const data = await response.json();
 
-        // Log della risposta API per il debug
-        console.log("API Response:", JSON.stringify(data, null, 2));
+        // Log della risposta completa per il debug
+        console.log("API Response Full:", JSON.stringify(data, null, 2));
 
         // Gestione della risposta
         const botMessage = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
