@@ -42,11 +42,11 @@
             color: blue;
         }
         .message.bot {
-    text-align: left;
-    color: green;
-    white-space: pre-wrap; /* Preserva gli a capo e gli spazi */
-    word-wrap: break-word; /* Permette di andare a capo se una parola è troppo lunga */
-}
+            text-align: left;
+            color: green;
+            white-space: pre-wrap; /* Preserva gli a capo e gli spazi */
+            word-wrap: break-word; /* Permette di andare a capo se una parola è troppo lunga */
+        }
         #user-input {
             display: flex;
             padding: 10px;
@@ -116,12 +116,11 @@
             });
 
             const data = await response.json();
-            const botMessage = data.message;
 
             // Aggiungi il messaggio del bot alla chat
             const botMessageElement = document.createElement('div');
             botMessageElement.className = 'message bot';
-            botMessageElement.textContent = 'Amber: ' + botMessage;
+            botMessageElement.innerHTML = 'Amber: ' + data.message.replace(/\n/g, '<br>'); // Converti i ritorni a capo in <br>
             messagesContainer.appendChild(botMessageElement);
 
             // Scorri fino in fondo alla chat
