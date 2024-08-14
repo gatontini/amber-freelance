@@ -3,83 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amber Freelance Chatbot</title>
+    <title>Amber Freelance Assistant</title>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
             background-color: #f4f4f4;
         }
-        #chat-container { 
-            width: 400px; 
-            height: 600px; 
-            border: 1px solid #ccc; 
-            display: flex; 
-            flex-direction: column; 
-            background-color: white; 
+        #form-container {
+            width: 400px;
+            padding: 20px;
+            background-color: white;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
-        #messages { 
-            flex: 1; 
-            padding: 10px; 
-            overflow-y: auto; 
-            border-bottom: 1px solid #ccc; 
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
-        #user-input { 
-            display: flex; 
-            padding: 10px; 
-            border-top: 1px solid #ccc; 
-            background-color: #f9f9f9;
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
-        #user-input input { 
-            flex: 1; 
-            padding: 10px; 
-            border: 1px solid #ccc; 
-            border-radius: 5px; 
-            margin-right: 10px;
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #000;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
         }
-        #user-input button { 
-            padding: 10px 20px; 
-            border: none; 
-            background-color: #000; 
-            color: white; 
-            cursor: pointer; 
-            border-radius: 5px; 
-        }
-        #user-input button:hover {
+        button:hover {
             background-color: #333;
+        }
+        .tone-description {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
-    <div id="chat-container">
-        <div id="messages"></div>
-        <div id="user-input">
-            <input type="text" id="userMessage" placeholder="Scrivi il tuo messaggio...">
-            <button onclick="sendMessage()">Invia</button>
-        </div>
+    <div id="form-container">
+        <form id="content-form">
+            <label for="keywords">Parole chiave per ottimizzare l'articolo:</label>
+            <input type="text" id="keywords" placeholder="Inserisci parole chiave separate da virgole">
+
+            <label for="internal-links">Link interni (max 2):</label>
+            <input type="text" id="internal-links" placeholder="Inserisci link separati da virgole (max 2)">
+
+            <label for="external-links">Link esterni (max 2):</label>
+            <input type="text" id="external-links" placeholder="Inserisci link separati da virgole (max 2)">
+
+            <label for="tone">Tono di voce:</label>
+            <select id="tone">
+                <option value="formale">Formale</option>
+                <option value="informale">Informale</option>
+                <option value="amichevole">Amichevole</option>
+                <option value="professionale">Professionale</option>
+                <option value="persuasivo">Persuasivo</option>
+                <option value="educativo">Educativo</option>
+            </select>
+
+            <div class="tone-description" id="tone-description">
+                <!-- La descrizione del tono selezionato apparirà qui -->
+            </div>
+
+            <label for="word-count">Numero di parole (max 800):</label>
+            <input type="number" id="word-count" min="100" max="800" value="800">
+
+            <button type="submit">Genera Contenuto</button>
+        </form>
     </div>
 
     <script>
-        const messagesContainer = document.getElementById('messages');
+        const toneDescriptions = {
+            "formale": "Formale: Un tono professionale e rispettoso, ideale per documenti aziendali o comunicazioni ufficiali.",
+            "informale": "Informale: Un tono più rilassato e amichevole, perfetto per social media o blog personali.",
+            "amichevole": "Amichevole: Un tono caldo e accogliente che invita al dialogo, utile per comunicazioni con i clienti.",
+            "professionale": "Professionale: Un tono che riflette competenza e affidabilità, adatto per comunicazioni aziendali.",
+            "persuasivo": "Persuasivo: Un tono che mira a convincere il lettore, ideale per testi di vendita o marketing.",
+            "educativo": "Educativo: Un tono chiaro e istruttivo, perfetto per articoli, guide, o tutorial."
+        };
 
-        async function sendMessage() {
-            const userMessage = document.getElementById('userMessage').value;
-            if (!userMessage) return;
+        const toneSelect = document.getElementById('tone');
+        const toneDescription = document.getElementById('tone-description');
 
-            // Aggiungi il messaggio dell'utente alla chat
-            const userMessageElement = document.createElement('div');
-            userMessageElement.textContent = 'Tu: ' + userMessage;
-            messagesContainer.appendChild(userMessageElement);
+        toneSelect.addEventListener('change', function() {
+            toneDescription.textContent = toneDescriptions[this.value];
+        });
 
-            // Svuota il campo di input
-            document.getElementById('userMessage').value = '';
+        document.getElementById('content-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const keywords = document.getElementById('keywords').value;
+            const internalLinks = document.getElementById('internal-links').value;
+            const externalLinks = document.getElementById('external-links').value;
+            const tone = document.getElementById('tone').value;
+            const wordCount = document.getElementById('word-count').value;
 
-            // Chiamata alla funzione serverless amber.js
+            const userMessage = `Parole chiave: ${keywords}. Link interni: ${internalLinks}. Link esterni: ${externalLinks}. Tono di voce: ${tone}. Numero di parole: ${wordCount}.`;
+
             const response = await fetch('/.netlify/functions/amber', {
                 method: 'POST',
                 headers: {
@@ -89,16 +119,11 @@
             });
 
             const data = await response.json();
-            const botMessage = data.message;
+            alert("Contenuto Generato:\n" + data.message);
+        });
 
-            // Aggiungi il messaggio del bot alla chat
-            const botMessageElement = document.createElement('div');
-            botMessageElement.textContent = 'Bot: ' + botMessage;
-            messagesContainer.appendChild(botMessageElement);
-
-            // Scorri fino in fondo alla chat
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
+        // Imposta la descrizione iniziale del tono
+        toneDescription.textContent = toneDescriptions[toneSelect.value];
     </script>
 </body>
 </html>
