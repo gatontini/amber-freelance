@@ -26,14 +26,16 @@
             border-radius: 8px;
         }
         #messages {
-            height: 400px;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-        }
+    height: 400px; /* Altezza massima, ma può essere regolata */
+    overflow-y: auto; /* Abilita lo scorrimento verticale se il contenuto supera l'altezza */
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    white-space: pre-wrap; /* Preserva i ritorni a capo e gli spazi */
+    word-wrap: break-word; /* Evita che il testo esca dal contenitore */
+}
         .message {
             margin-bottom: 10px;
         }
