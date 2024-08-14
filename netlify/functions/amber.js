@@ -12,18 +12,19 @@ exports.handler = async function(event, context) {
     Amber:`;
 
     try {
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}` // Usa la tua chiave API di OpenAI
-            },
-            body: JSON.stringify({
-                model: "gpt-4",
-                messages: [{ role: "user", content: prompt }],
-                max_tokens: 150
-            })
-        });
+       const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+    },
+    body: JSON.stringify({
+        model: "gpt-3.5-turbo", // Passa a GPT-3.5-turbo
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 200 // Puoi mantenere un numero di token simile
+    })
+});
+
 
         const data = await response.json();
 
