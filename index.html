@@ -42,9 +42,11 @@
             color: blue;
         }
         .message.bot {
-            text-align: left;
-            color: green;
-        }
+    text-align: left;
+    color: green;
+    white-space: pre-wrap; /* Preserva gli a capo e gli spazi */
+    word-wrap: break-word; /* Permette di andare a capo se una parola è troppo lunga */
+}
         #user-input {
             display: flex;
             padding: 10px;
