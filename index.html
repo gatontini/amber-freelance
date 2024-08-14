@@ -86,63 +86,73 @@
     </div>
 
     <script>
-        let conversationHistory = "";  // Variabile per mantenere il contesto della conversazione
+let conversationHistory = "";  // Variabile per mantenere il contesto della conversazione
 
-        const messagesContainer = document.getElementById('messages');
+const messagesContainer = document.getElementById('messages');
 
-        document.getElementById('sendButton').addEventListener('click', sendMessage);
-        document.getElementById('userMessage').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
+document.getElementById('sendButton').addEventListener('click', sendMessage);
+document.getElementById('userMessage').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
+
+async function sendMessage() {
+    const userMessage = document.getElementById('userMessage').value;
+    if (!userMessage) return;
+
+    // Aggiungi il messaggio dell'utente alla cronologia della conversazione
+    conversationHistory += `User: ${userMessage}\n`;
+
+    // Visualizza il messaggio dell'utente nella chat
+    const userMessageElement = document.createElement('div');
+    userMessageElement.className = 'message user';
+    userMessageElement.textContent = 'Tu: ' + userMessage;
+    messagesContainer.appendChild(userMessageElement);
+
+    // Svuota il campo di input
+    document.getElementById('userMessage').value = '';
+
+    const prompt = `
+    You are Amber, a virtual assistant who helps freelancers and studios with everyday tasks like content creation, email writing, and document preparation. Respond in a professional manner and write the requested content as accurately as possible.
+
+    Conversation so far:
+    ${conversationHistory}
+    Amber:`;
+
+    try {
+        const response = await fetch('/.netlify/functions/amber', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: prompt })
         });
 
-        async function sendMessage() {
-            const userMessage = document.getElementById('userMessage').value;
-            if (!userMessage) return;
+        const data = await response.json();
 
-            // Aggiungi il messaggio dell'utente alla cronologia della conversazione
-            conversationHistory += `User: ${userMessage}\n`;
+        let botMessage = data.message;
 
-            // Visualizza il messaggio dell'utente nella chat
-            const userMessageElement = document.createElement('div');
-            userMessageElement.className = 'message user';
-            userMessageElement.textContent = 'Tu: ' + userMessage;
-            messagesContainer.appendChild(userMessageElement);
+        // Aggiungi il messaggio di Amber alla cronologia della conversazione
+        conversationHistory += `Amber: ${botMessage}\n`;
 
-            // Svuota il campo di input
-            document.getElementById('userMessage').value = '';
+        // Visualizza il messaggio di Amber nella chat
+        const botMessageElement = document.createElement('div');
+        botMessageElement.className = 'message bot';
+        botMessageElement.innerHTML = 'Amber: ' + botMessage.replace(/\n/g, '<br>');
+        messagesContainer.appendChild(botMessageElement);
 
-            const prompt = `
-            You are Amber, a virtual assistant who helps freelancers and studios with everyday tasks like content creation, email writing, and document preparation. Respond conversationally and helpfully based on the user’s requests.
+        // Scorri fino in fondo alla chat
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    } catch (error) {
+        console.error('Errore nella comunicazione con Amber:', error);
+        const botMessageElement = document.createElement('div');
+        botMessageElement.className = 'message bot';
+        botMessageElement.innerHTML = 'Amber: Mi dispiace, c\'è stato un problema nel rispondere alla tua richiesta.';
+        messagesContainer.appendChild(botMessageElement);
+    }
+}
 
-            ${conversationHistory}
-            Amber:`;
-
-            const response = await fetch('/.netlify/functions/amber', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ message: prompt })
-            });
-
-            const data = await response.json();
-
-            let botMessage = data.message;
-
-            // Aggiungi il messaggio di Amber alla cronologia della conversazione
-            conversationHistory += `Amber: ${botMessage}\n`;
-
-            // Visualizza il messaggio di Amber nella chat
-            const botMessageElement = document.createElement('div');
-            botMessageElement.className = 'message bot';
-            botMessageElement.innerHTML = 'Amber: ' + botMessage.replace(/\n/g, '<br>');
-            messagesContainer.appendChild(botMessageElement);
-
-            // Scorri fino in fondo alla chat
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
     </script>
 </body>
 </html>
