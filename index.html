@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amber Freelance Assistant</title>
+    <title>Amber - Il Tuo Assistente Virtuale</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,132 +13,98 @@
             min-height: 100vh;
             margin: 0;
             background-color: #f4f4f4;
-            padding: 40px; /* Aggiunto padding extra per dare più spazio ai margini */
+            padding: 20px;
             box-sizing: border-box;
         }
-        #form-container {
+        #chat-container {
             width: 100%;
             max-width: 600px;
-            padding: 40px; /* Aumentato il padding per più spazio interno */
+            padding: 20px;
             background-color: white;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             box-sizing: border-box;
-            overflow-y: auto; /* Aggiunge uno scroll se necessario */
-            margin: 20px; /* Aggiunto margine extra per dare più spazio ai lati */
-            border-radius: 8px; /* Aggiunto border-radius per un effetto più morbido */
+            border-radius: 8px;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input, select, textarea {
-            width: 100%;
+        #messages {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
             padding: 10px;
             margin-bottom: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .message.user {
+            text-align: right;
+            color: blue;
+        }
+        .message.bot {
+            text-align: left;
+            color: green;
+        }
+        #user-input {
+            display: flex;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        #userMessage {
+            flex: 1;
+            padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            box-sizing: border-box;
         }
-        button {
+        #sendButton {
             padding: 10px 20px;
             border: none;
             background-color: #000;
             color: white;
             cursor: pointer;
             border-radius: 5px;
-            width: 100%;
+            margin-left: 10px;
         }
-        button:hover {
+        #sendButton:hover {
             background-color: #333;
-        }
-        .tone-description {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 10px;
-        }
-        #output-container {
-            margin-top: 20px;
-        }
-        #output {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            min-height: 200px;
-            white-space: pre-wrap; /* Per preservare gli a capo */
-            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
-    <div id="form-container">
-        <form id="content-form">
-            <label for="keywords">Parole chiave per ottimizzare l'articolo:</label>
-            <input type="text" id="keywords" placeholder="Inserisci parole chiave separate da virgole">
-
-            <label for="internal-links">Link interni (max 2):</label>
-            <input type="text" id="internal-links" placeholder="Inserisci link separati da virgole (max 2)">
-
-            <label for="external-links">Link esterni (max 2):</label>
-            <input type="text" id="external-links" placeholder="Inserisci link separati da virgole (max 2)">
-
-            <label for="tone">Tono di voce:</label>
-            <select id="tone">
-                <option value="formale">Formale</option>
-                <option value="informale">Informale</option>
-                <option value="amichevole">Amichevole</option>
-                <option value="professionale">Professionale</option>
-                <option value="persuasivo">Persuasivo</option>
-                <option value="educativo">Educativo</option>
-            </select>
-
-            <div class="tone-description" id="tone-description">
-                <!-- La descrizione del tono selezionato apparirà qui -->
-            </div>
-
-            <label for="word-count">Numero di parole (max 800):</label>
-            <input type="number" id="word-count" min="100" max="800" value="800">
-
-            <button type="submit">Genera Contenuto</button>
-        </form>
-
-        <!-- Spazio per la visione del testo generato -->
-        <div id="output-container">
-            <h3>Contenuto Generato:</h3>
-            <div id="output"></div>
+    <div id="chat-container">
+        <div id="messages"></div>
+        <div id="user-input">
+            <input type="text" id="userMessage" placeholder="Scrivi qui il tuo messaggio...">
+            <button id="sendButton">Invia</button>
         </div>
     </div>
 
     <script>
-        const toneDescriptions = {
-            "formale": "Formale: Un tono professionale e rispettoso, ideale per documenti aziendali o comunicazioni ufficiali.",
-            "informale": "Informale: Un tono più rilassato e amichevole, perfetto per social media o blog personali.",
-            "amichevole": "Amichevole: Un tono caldo e accogliente che invita al dialogo, utile per comunicazioni con i clienti.",
-            "professionale": "Professionale: Un tono che riflette competenza e affidabilità, adatto per comunicazioni aziendali.",
-            "persuasivo": "Persuasivo: Un tono che mira a convincere il lettore, ideale per testi di vendita o marketing.",
-            "educativo": "Educativo: Un tono chiaro e istruttivo, perfetto per articoli, guide, o tutorial."
-        };
+        const messagesContainer = document.getElementById('messages');
 
-        const toneSelect = document.getElementById('tone');
-        const toneDescription = document.getElementById('tone-description');
-        const output = document.getElementById('output');
-
-        toneSelect.addEventListener('change', function() {
-            toneDescription.textContent = toneDescriptions[this.value];
+        document.getElementById('sendButton').addEventListener('click', sendMessage);
+        document.getElementById('userMessage').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
         });
 
-        document.getElementById('content-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const keywords = document.getElementById('keywords').value;
-            const internalLinks = document.getElementById('internal-links').value;
-            const externalLinks = document.getElementById('external-links').value;
-            const tone = document.getElementById('tone').value;
-            const wordCount = document.getElementById('word-count').value;
+        async function sendMessage() {
+            const userMessage = document.getElementById('userMessage').value;
+            if (!userMessage) return;
 
-            const userMessage = `Parole chiave: ${keywords}. Link interni: ${internalLinks}. Link esterni: ${externalLinks}. Tono di voce: ${tone}. Numero di parole: ${wordCount}.`;
+            // Aggiungi il messaggio dell'utente alla chat
+            const userMessageElement = document.createElement('div');
+            userMessageElement.className = 'message user';
+            userMessageElement.textContent = 'Tu: ' + userMessage;
+            messagesContainer.appendChild(userMessageElement);
 
+            // Svuota il campo di input
+            document.getElementById('userMessage').value = '';
+
+            // Chiamata all'API di GPT-4 per ottenere la risposta di Amber
             const response = await fetch('/.netlify/functions/amber', {
                 method: 'POST',
                 headers: {
@@ -148,13 +114,17 @@
             });
 
             const data = await response.json();
+            const botMessage = data.message;
 
-            // Visualizza il contenuto generato nell'elemento #output
-            output.textContent = data.message;
-        });
+            // Aggiungi il messaggio del bot alla chat
+            const botMessageElement = document.createElement('div');
+            botMessageElement.className = 'message bot';
+            botMessageElement.textContent = 'Amber: ' + botMessage;
+            messagesContainer.appendChild(botMessageElement);
 
-        // Imposta la descrizione iniziale del tono
-        toneDescription.textContent = toneDescriptions[toneSelect.value];
+            // Scorri fino in fondo alla chat
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
     </script>
 </body>
 </html>
