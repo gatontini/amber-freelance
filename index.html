@@ -26,16 +26,16 @@
             border-radius: 8px;
         }
         #messages {
-    height: 400px; /* Altezza massima, ma può essere regolata */
-    overflow-y: auto; /* Abilita lo scorrimento verticale se il contenuto supera l'altezza */
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-    background-color: #f9f9f9;
-    border-radius: 5px;
-    white-space: pre-wrap; /* Preserva i ritorni a capo e gli spazi */
-    word-wrap: break-word; /* Evita che il testo esca dal contenitore */
-}
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
         .message {
             margin-bottom: 10px;
         }
@@ -46,8 +46,8 @@
         .message.bot {
             text-align: left;
             color: green;
-            white-space: pre-wrap; /* Preserva gli a capo e gli spazi */
-            word-wrap: break-word; /* Permette di andare a capo se una parola è troppo lunga */
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
         #user-input {
             display: flex;
@@ -95,51 +95,55 @@
             }
         });
 
-       async function sendMessage() {
-    const userMessage = document.getElementById('userMessage').value;
-    if (!userMessage) return;
+        async function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
 
-    // Aggiungi il messaggio dell'utente alla chat
-    const userMessageElement = document.createElement('div');
-    userMessageElement.className = 'message user';
-    userMessageElement.textContent = 'Tu: ' + userMessage;
-    messagesContainer.appendChild(userMessageElement);
+        async function sendMessage() {
+            const userMessage = document.getElementById('userMessage').value;
+            if (!userMessage) return;
 
-    // Svuota il campo di input
-    document.getElementById('userMessage').value = '';
+            // Aggiungi il messaggio dell'utente alla chat
+            const userMessageElement = document.createElement('div');
+            userMessageElement.className = 'message user';
+            userMessageElement.textContent = 'Tu: ' + userMessage;
+            messagesContainer.appendChild(userMessageElement);
 
-    async function fetchResponse(prompt) {
-        const response = await fetch('/.netlify/functions/amber', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ message: prompt })
-        });
+            // Svuota il campo di input
+            document.getElementById('userMessage').value = '';
 
-        const data = await response.json();
-        console.log("Full response:", data);  // Log della risposta completa per il debug
-        return data.message;
-    }
+            async function fetchResponse(prompt) {
+                const response = await fetch('/.netlify/functions/amber', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: prompt })
+                });
 
-    let botMessage = await fetchResponse(userMessage);
+                const data = await response.json();
+                console.log("Full response:", data);  // Log della risposta completa per il debug
+                return data.message;
+            }
 
-    // Ciclo per continuare a richiedere la risposta se sembra troncata
-    while (botMessage.endsWith('...') || botMessage.split(' ').length >= 350) {
-        const continuationMessage = await fetchResponse("Continua da dove ti sei fermato.");
-        botMessage += " " + continuationMessage;
-    }
+            let botMessage = await fetchResponse(userMessage);
 
-    // Aggiungi il messaggio del bot alla chat
-    const botMessageElement = document.createElement('div');
-    botMessageElement.className = 'message bot';
-    botMessageElement.innerHTML = 'Amber: ' + botMessage.replace(/\n/g, '<br>'); // Converti i ritorni a capo in <br>
-    messagesContainer.appendChild(botMessageElement);
+            // Ciclo per continuare a richiedere la risposta se sembra troncata
+            while (botMessage.endsWith('...') || botMessage.split(' ').length >= 350) {
+                await sleep(500); // Aggiungi un ritardo di 500 ms
+                const continuationMessage = await fetchResponse("Continua da dove ti sei fermato.");
+                botMessage += " " + continuationMessage;
+            }
 
-    // Scorri fino in fondo alla chat
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
+            // Aggiungi il messaggio del bot alla chat
+            const botMessageElement = document.createElement('div');
+            botMessageElement.className = 'message bot';
+            botMessageElement.innerHTML = 'Amber: ' + botMessage.replace(/\n/g, '<br>'); // Converti i ritorni a capo in <br>
+            messagesContainer.appendChild(botMessageElement);
 
+            // Scorri fino in fondo alla chat
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
     </script>
 </body>
 </html>
