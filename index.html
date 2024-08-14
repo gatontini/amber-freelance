@@ -15,7 +15,7 @@
             background-color: #f4f4f4;
         }
         #form-container {
-            width: 400px;
+            width: 600px;
             padding: 20px;
             background-color: white;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
@@ -47,6 +47,18 @@
             font-size: 0.9em;
             color: #666;
             margin-bottom: 10px;
+        }
+        #output-container {
+            margin-top: 20px;
+        }
+        #output {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            min-height: 200px;
+            white-space: pre-wrap; /* Per preservare gli a capo */
         }
     </style>
 </head>
@@ -81,6 +93,12 @@
 
             <button type="submit">Genera Contenuto</button>
         </form>
+
+        <!-- Spazio per la visione del testo generato -->
+        <div id="output-container">
+            <h3>Contenuto Generato:</h3>
+            <div id="output"></div>
+        </div>
     </div>
 
     <script>
@@ -95,6 +113,7 @@
 
         const toneSelect = document.getElementById('tone');
         const toneDescription = document.getElementById('tone-description');
+        const output = document.getElementById('output');
 
         toneSelect.addEventListener('change', function() {
             toneDescription.textContent = toneDescriptions[this.value];
@@ -119,7 +138,9 @@
             });
 
             const data = await response.json();
-            alert("Contenuto Generato:\n" + data.message);
+
+            // Visualizza il contenuto generato nell'elemento #output
+            output.textContent = data.message;
         });
 
         // Imposta la descrizione iniziale del tono
