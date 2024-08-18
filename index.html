@@ -12,7 +12,7 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            background-color: #f4f4f4;
+            background-color: #F6F6F7; /* Sfondo della chat */
             padding: 20px;
             box-sizing: border-box;
         }
@@ -30,7 +30,7 @@
         }
         #messages {
             flex: 1;
-            background-color: #e5ddd5; /* Sfondo simile a WhatsApp */
+            background-color: #F6F6F7; /* Sfondo simile a WhatsApp */
             overflow-y: auto;
             border: 1px solid #ccc;
             padding: 10px;
@@ -48,12 +48,6 @@
             position: relative;
             animation: fadeIn 0.5s ease-out;
         }
-        .message .time {
-            display: block;
-            font-size: 12px;
-            color: #999;
-            margin-top: 5px;
-        }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -69,10 +63,14 @@
         .message.bot {
             background-color: #fff;
             margin-right: auto;
+            margin-left: 50px; /* Sposta leggermente a destra il messaggio di Amber */
             text-align: left;
             border: 1px solid #ccc;
             display: flex;
             align-items: center;
+            word-wrap: break-word; /* Permette di andare a capo se una parola è troppo lunga */
+            border-radius: 20px; /* Arrotonda gli angoli del messaggio di Amber */
+            padding: 10px 15px; /* Aggiunge padding all'interno del messaggio */
         }
         .message.bot .avatar {
             width: 40px;
@@ -80,11 +78,13 @@
             border-radius: 50%;
             margin-right: 10px;
             vertical-align: middle;
+            position: absolute;
+            left: -50px; /* Posiziona l'immagine all'esterno del riquadro di Amber */
         }
         #user-input {
             display: flex;
             padding: 10px;
-            background-color: #fff;
+            background-color: #fff; /* Sfondo bianco per l'input dell'utente */
             border-radius: 5px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
@@ -148,7 +148,7 @@ async function sendMessage() {
     // Visualizza il messaggio dell'utente nella chat
     const userMessageElement = document.createElement('div');
     userMessageElement.className = 'message user';
-    userMessageElement.innerHTML = userMessage + `<span class="time">${new Date().getHours()}:${new Date().getMinutes().toString().padStart(2, '0')}</span>`;
+    userMessageElement.innerHTML = userMessage;
     messagesContainer.appendChild(userMessageElement);
 
     // Svuota il campo di input
@@ -187,7 +187,7 @@ async function sendMessage() {
         botMessageElement.className = 'message bot';
         botMessageElement.innerHTML = `
             <img src="https://res.cloudinary.com/frontly/image/upload/v1724018791/amber_avatar_cropped_ietxso.png" alt="Amber Avatar" class="avatar">
-            <div class="bot-text">${botMessage.replace(/\n/g, '<br>')}<span class="time">${new Date().getHours()}:${new Date().getMinutes().toString().padStart(2, '0')}</span></div>`;
+            <div class="bot-text">${botMessage.replace(/\n/g, '<br>')}</div>`;
         messagesContainer.appendChild(botMessageElement);
 
         // Scorri fino in fondo alla chat
