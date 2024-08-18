@@ -120,6 +120,7 @@
         <div id="messages"></div>
         <div id="user-input">
             <textarea id="userMessage" placeholder="Scrivi qui il tuo messaggio..." autocomplete="off"></textarea>
+            <input type="file" id="fileInput">
             <button id="sendButton">Invia</button>
         </div>
     </div>
@@ -128,6 +129,7 @@
 let conversationHistory = "";  // Variabile per mantenere il contesto della conversazione
 
 const messagesContainer = document.getElementById('messages');
+const fileInput = document.getElementById('fileInput');
 
 document.getElementById('sendButton').addEventListener('click', sendMessage);
 document.getElementById('userMessage').addEventListener('keypress', function (e) {
@@ -144,15 +146,25 @@ document.getElementById('userMessage').addEventListener('input', function () {
 
 async function sendMessage() {
     const userMessage = document.getElementById('userMessage').value;
-    if (!userMessage) return;
+
+    let fileContent = '';
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        fileContent = await readFileContent(file);
+        fileInput.value = ''; // Resetta il file input dopo l'upload
+    }
+
+    if (!userMessage && !fileContent) return;
+
+    const messageToSend = fileContent ? fileContent : userMessage;
 
     // Aggiungi il messaggio dell'utente alla cronologia della conversazione
-    conversationHistory += `User: ${userMessage}\n`;
+    conversationHistory += `User: ${messageToSend}\n`;
 
     // Visualizza il messaggio dell'utente nella chat
     const userMessageElement = document.createElement('div');
     userMessageElement.className = 'message user';
-    userMessageElement.innerHTML = userMessage;
+    userMessageElement.innerHTML = messageToSend;
     messagesContainer.appendChild(userMessageElement);
 
     // Svuota il campo di input
@@ -203,6 +215,15 @@ async function sendMessage() {
         botMessageElement.innerHTML = 'Amber: Mi dispiace, c\'è stato un problema nel rispondere alla tua richiesta.';
         messagesContainer.appendChild(botMessageElement);
     }
+}
+
+function readFileContent(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = event => resolve(event.target.result);
+        reader.onerror = error => reject(error);
+        reader.readAsText(file);
+    });
 }
 
     </script>
