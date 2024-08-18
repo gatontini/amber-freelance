@@ -52,15 +52,15 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-.message.user {
-    background-color: #E31B22; /* Sfondo rosso per l'utente */
-    color: white; /* Testo bianco per l'utente */
-    margin-right: auto; /* Allinea a sinistra */
-    text-align: left; /* Testo allineato a sinistra */
-    max-width: 80%; /* Limita la larghezza massima per evitare che il messaggio sia troppo largo */
-    word-wrap: break-word; /* Permette di andare a capo se una parola è troppo lunga */
-    border-radius: 20px; /* Arrotonda gli angoli del messaggio */
-}
+        .message.user {
+            background-color: #E31B22; /* Sfondo rosso per l'utente */
+            color: white; /* Testo bianco per l'utente */
+            margin-right: auto; /* Allinea a sinistra */
+            text-align: right; /* Testo allineato a sinistra */
+            max-width: 80%; /* Limita la larghezza massima per evitare che il messaggio sia troppo largo */
+            word-wrap: break-word; /* Permette di andare a capo se una parola è troppo lunga */
+            border-radius: 20px; /* Arrotonda gli angoli del messaggio */
+        }
 
         .message.bot {
             background-color: #fff;
@@ -73,6 +73,7 @@
             word-wrap: break-word; /* Permette di andare a capo se una parola è troppo lunga */
             border-radius: 20px; /* Arrotonda gli angoli del messaggio di Amber */
             padding: 10px 15px; /* Aggiunge padding all'interno del messaggio */
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Aggiunge una leggera ombreggiatura */
         }
         .message.bot .avatar {
             width: 40px;
