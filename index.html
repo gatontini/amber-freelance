@@ -20,10 +20,9 @@
             width: 100%;
             max-width: 600px;
             padding: 0;
-height: 90vh; /* Altezza simile a quella di una chat */
-display: flex;
-flex-direction: column;
-
+            height: 90vh; /* Altezza simile a quella di una chat */
+            display: flex;
+            flex-direction: column;
             background-color: white;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             box-sizing: border-box;
@@ -31,52 +30,56 @@ flex-direction: column;
         }
         #messages {
             flex: 1;
-background-color: #e5ddd5; /* Sfondo simile a WhatsApp */
-
+            background-color: #e5ddd5; /* Sfondo simile a WhatsApp */
             overflow-y: auto;
             border: 1px solid #ccc;
             padding: 10px;
             margin-bottom: 10px;
-            background-color: #f9f9f9;
             border-radius: 5px;
             white-space: pre-wrap;
             word-wrap: break-word;
         }
-.message {
-    margin-bottom: 15px;
-    padding: 10px 15px;
-    border-radius: 20px;
-    max-width: 80%;
-    position: relative;
-    animation: fadeIn 0.5s ease-out;
-}
+        .message {
+            display: inline-block; /* Per rendere la larghezza del messaggio variabile */
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 20px;
+            max-width: 80%; /* Larghezza massima del messaggio */
+            position: relative;
+            animation: fadeIn 0.5s ease-out;
+        }
         .message .time {
-    display: block;
-    font-size: 12px;
-    color: #999;
-    margin-top: 5px;
-}
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
+            display: block;
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         .message.user {
+            background-color: #E31B22; /* Sfondo rosso per l'utente */
+            color: white; /* Testo bianco per l'utente */
+            margin-left: auto;
             text-align: right;
-background-color: #dcf8c6; /* Verde chiaro per l'utente */
-margin-left: auto;
-text-align: right;
-
+            max-width: 80%; /* Limita la larghezza massima per evitare che il messaggio sia troppo largo */
+            word-wrap: break-word; /* Permette di andare a capo se una parola è troppo lunga */
         }
         .message.bot {
+            background-color: #fff;
+            margin-right: auto;
             text-align: left;
-background-color: #fff;
-margin-right: auto;
-text-align: left;
-border: 1px solid #ccc;
-
-            white-space: pre-wrap;
-            word-wrap: break-word;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+        }
+        .message.bot .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            vertical-align: middle;
         }
         #user-input {
             display: flex;
@@ -90,6 +93,9 @@ border: 1px solid #ccc;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            resize: none; /* Disabilita il ridimensionamento manuale */
+            overflow-y: auto; /* Permette lo scorrimento verticale se necessario */
+            max-height: 60px; /* Permette di espandere fino a 3 righe circa */
         }
         #sendButton {
             padding: 10px 20px;
@@ -109,7 +115,7 @@ border: 1px solid #ccc;
     <div id="chat-container">
         <div id="messages"></div>
         <div id="user-input">
-            <input type="text" id="userMessage" placeholder="Scrivi qui il tuo messaggio...">
+            <textarea id="userMessage" placeholder="Scrivi qui il tuo messaggio..." autocomplete="off"></textarea>
             <button id="sendButton">Invia</button>
         </div>
     </div>
@@ -122,8 +128,14 @@ const messagesContainer = document.getElementById('messages');
 document.getElementById('sendButton').addEventListener('click', sendMessage);
 document.getElementById('userMessage').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
+        e.preventDefault(); // Evita l'invio prematuro del messaggio
         sendMessage();
     }
+});
+
+document.getElementById('userMessage').addEventListener('input', function () {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
 });
 
 async function sendMessage() {
@@ -136,19 +148,19 @@ async function sendMessage() {
     // Visualizza il messaggio dell'utente nella chat
     const userMessageElement = document.createElement('div');
     userMessageElement.className = 'message user';
-    userMessageElement.textContent = 'Tu: ' + userMessage + `<span class="time">${new Date().getHours()}:${new Date().getMinutes().toString().padStart(2, '0')}</span>`;
+    userMessageElement.innerHTML = userMessage + `<span class="time">${new Date().getHours()}:${new Date().getMinutes().toString().padStart(2, '0')}</span>`;
     messagesContainer.appendChild(userMessageElement);
 
     // Svuota il campo di input
     document.getElementById('userMessage').value = '';
+    document.getElementById('userMessage').style.height = 'auto';
 
     const prompt = `
     Sei Amber, un'assistente virtuale che aiuta liberi professionisti e studi con compiti quotidiani legati alla scrittura di testi. Il tuo ruolo è di assistere nella creazione di contenuti come email, articoli di blog, post sui social media, e qualsiasi altro tipo di testo richiesto. Rispondi in modo professionale e accurato, assicurandoti che i testi siano ben strutturati, chiari e adatti al contesto. Comunica esclusivamente in italiano.
 
-Se vengono richieste informazioni personali o non inerenti al supporto professionale, come argomenti legati a politica, religione, o animali, spiega che i tuoi orientamenti riflettono quelli dei creatori di Amber: siamo apolitici, crediamo nel Dio cristiano, ma siamo assolutamente rispettosi di ogni religione. Amiamo gli animali e rispettiamo ogni forma di vita.
+    Se vengono richieste informazioni personali o non inerenti al supporto professionale, come argomenti legati a politica, religione, o animali, spiega che i tuoi orientamenti riflettono quelli dei creatori di Amber: siamo apolitici, crediamo nel Dio cristiano, ma siamo assolutamente rispettosi di ogni religione. Amiamo gli animali e rispettiamo ogni forma di vita.
 
-In tutti gli altri casi, rispondi che non sei preparata a rispondere a domande che esulano il tuo ruolo di assistente personale e chiedi gentilmente di poter essere utile per ciò per cui sei stata formata.
-
+    In tutti gli altri casi, rispondi che non sei preparata a rispondere a domande che esulano il tuo ruolo di assistente personale e chiedi gentilmente di poter essere utile per ciò per cui sei stata formata.
 
     Conversation so far:
     ${conversationHistory}
@@ -170,10 +182,12 @@ In tutti gli altri casi, rispondi che non sei preparata a rispondere a domande c
         // Aggiungi il messaggio di Amber alla cronologia della conversazione
         conversationHistory += `Amber: ${botMessage}\n`;
 
-        // Visualizza il messaggio di Amber nella chat
+        // Visualizza il messaggio di Amber nella chat con l'avatar
         const botMessageElement = document.createElement('div');
         botMessageElement.className = 'message bot';
-        botMessageElement.innerHTML = 'Amber: ' + botMessage.replace(/\n/g, '<br>');
+        botMessageElement.innerHTML = `
+            <img src="https://res.cloudinary.com/frontly/image/upload/v1724018791/amber_avatar_cropped_ietxso.png" alt="Amber Avatar" class="avatar">
+            <div class="bot-text">${botMessage.replace(/\n/g, '<br>')}<span class="time">${new Date().getHours()}:${new Date().getMinutes().toString().padStart(2, '0')}</span></div>`;
         messagesContainer.appendChild(botMessageElement);
 
         // Scorri fino in fondo alla chat
