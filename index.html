@@ -43,7 +43,7 @@
             display: inline-block; /* Per rendere la larghezza del messaggio variabile */
             margin-bottom: 15px;
             padding: 10px 15px;
-            border-radius: 20px;
+            border-radius: 5px;
             max-width: 80%; /* Larghezza massima del messaggio */
             position: relative;
             animation: fadeIn 0.5s ease-out;
@@ -53,15 +53,15 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .message.user {
-            background-color: #E31B22; /* Sfondo rosso per l'utente */
-            color: white; /* Testo bianco per l'utente */
-            margin-right: auto; /* Allinea a sinistra */
-            text-align: right; /* Testo allineato a sinistra */
-            max-width: 80%; /* Limita la larghezza massima per evitare che il messaggio sia troppo largo */
-            word-wrap: break-word; /* Permette di andare a capo se una parola è troppo lunga */
-            border-radius: 20px; /* Arrotonda gli angoli del messaggio */
+                background-color: #E31B22; /* Sfondo rosso per l'utente */
+                color: white; /* Testo bianco per l'utente */
+                margin-left: auto; /* Allinea il riquadro a destra */
+                text-align: right; /* Allinea il testo a destra */
+                max-width: 80%; /* Limita la larghezza massima per evitare che il messaggio sia troppo largo */
+                word-wrap: break-word; /* Permette di andare a capo se una parola è troppo lunga */
+                border-radius: 5px; /* Arrotonda gli angoli del messaggio */
+                padding: 10px 15px; /* Aggiunge un padding interno per un aspetto migliore */
         }
-
         .message.bot {
             background-color: #fff;
             margin-right: auto;
@@ -71,7 +71,7 @@
             display: flex;
             align-items: center;
             word-wrap: break-word; /* Permette di andare a capo se una parola è troppo lunga */
-            border-radius: 20px; /* Arrotonda gli angoli del messaggio di Amber */
+            border-radius: 5px; /* Arrotonda gli angoli del messaggio di Amber */
             padding: 10px 15px; /* Aggiunge padding all'interno del messaggio */
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Aggiunge una leggera ombreggiatura */
         }
