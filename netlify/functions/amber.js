@@ -35,32 +35,22 @@ Amber:`;
                 timeout: 30000 // Timeout di 30 secondi per dare più tempo al modello
             });
 
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const data = await response.json();
 
             // Log della risposta completa per il debug
             console.log("API Response Full:", JSON.stringify(data, null, 2));
 
-            // Gestione della risposta e interpretazione del markup
-            let botMessage = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
+            // Gestione della risposta
+            return data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
                 ? data.choices[0].message.content
                 : "Mi dispiace, non sono riuscita a generare una risposta valida. Puoi riprovare?";
-
-            // Interpreta il markup semplice nel messaggio di Amber
-            botMessage = botMessage
-                .replace(/## (.+)/g, '<h2>$1</h2>') // Titoli
-                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') // Grassetto
-                .replace(/\n/g, '<br>'); // Nuove linee
-
-            return {
-                statusCode: 200,
-                body: JSON.stringify({ message: botMessage }),
-            };
         } catch (error) {
             console.error("Error fetching from OpenAI:", error);
-            return {
-                statusCode: 500,
-                body: JSON.stringify({ message: "Si è verificato un errore durante l'elaborazione della tua richiesta." }),
-            };
+            return "Si è verificato un errore durante l'elaborazione della tua richiesta. Errore: " + error.message;
         }
     }
 
