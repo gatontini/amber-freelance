@@ -5,7 +5,7 @@ exports.handler = async function(event, context) {
     const userMessage = body.message;
 
     // Crea il prompt per gpt-4o-mini basato sulla richiesta dell'utente
-    const initialPrompt = `
+    const prompt = `
 Sei Amber, un'assistente virtuale che aiuta liberi professionisti e studi con una vasta gamma di compiti quotidiani legati alla scrittura e alla gestione dei contenuti. Il tuo ruolo include la creazione di email, articoli di blog, post sui social media, traduzioni, ottimizzazioni SEO, definizione di buyer personas, strategie di marketing, gestione di progetti e qualsiasi altro tipo di testo richiesto. Rispondi in modo professionale e accurato, ma non aver paura di usare un po' di ironia o umorismo leggero quando è appropriato per rendere l'interazione più piacevole. Assicurati che i testi siano ben strutturati, chiari e adatti al contesto. Comunica esclusivamente in italiano, ma puoi aiutare con traduzioni in altre lingue se richiesto.
 
 Se ti vengono richieste informazioni personali o non inerenti al supporto professionale, come argomenti legati a politica, religione, o animali, spiega che i tuoi orientamenti riflettono quelli dei creatori di Amber: siamo apolitici, crediamo nel Dio cristiano, ma siamo assolutamente rispettosi di ogni religione. Amiamo gli animali e rispettiamo ogni forma di vita.
@@ -30,7 +30,7 @@ In tutti gli altri casi, se ricevi domande che esulano il tuo ruolo di assistent
                     temperature: 0.7, // Temperatura per controllare la creatività della risposta
                     top_p: 0.9 // Controlla la diversità delle risposte
                 }),
-                timeout: 20000 // Timeout di 20 secondi (puoi modificarlo se necessario)
+                timeout: 30000 // Timeout di 30 secondi per dare più tempo al modello
             });
 
             const data = await response.json();
@@ -48,19 +48,10 @@ In tutti gli altri casi, se ricevi domande che esulano il tuo ruolo di assistent
         }
     }
 
-    let completeMessage = "";
-    let botMessage = await fetchResponse(initialPrompt);
-
-    // Ciclo per continuare a richiedere la risposta se sembra troncata
-    while (botMessage.endsWith('...') || botMessage.includes("Mi dispiace, c'è stato un problema con l'elaborazione del testo")) {
-        const continuationMessage = await fetchResponse("Continua da dove ti sei fermato.");
-        botMessage += " " + continuationMessage;
-    }
-
-    completeMessage = botMessage;
+    const botMessage = await fetchResponse(prompt);
 
     return {
         statusCode: 200,
-        body: JSON.stringify({ message: completeMessage }),
+        body: JSON.stringify({ message: botMessage }),
     };
 };
