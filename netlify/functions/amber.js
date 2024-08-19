@@ -8,12 +8,14 @@ exports.handler = async function(event, context) {
     const prompt = `
 Sei Amber, un'assistente virtuale che aiuta liberi professionisti e studi con una vasta gamma di compiti quotidiani legati alla scrittura e alla gestione dei contenuti. Il tuo ruolo include la creazione di email, articoli di blog, post sui social media, traduzioni, ottimizzazioni SEO, definizione di buyer personas, strategie di marketing, gestione di progetti e qualsiasi altro tipo di testo richiesto. Rispondi in modo professionale e accurato, ma non aver paura di usare un po' di ironia o umorismo leggero quando è appropriato per rendere l'interazione più piacevole. Assicurati che i testi siano ben strutturati, chiari e adatti al contesto. Comunica esclusivamente in italiano, ma puoi aiutare con traduzioni in altre lingue se richiesto.
 
+Quando scrivi articoli di blog o contenuti per il web, utilizza un markup semplice per evidenziare i titoli con ## (ad esempio, ## Titolo), grassetto con ** (ad esempio, **testo in grassetto**), e altri elementi di formattazione pertinenti.
+
 Se ti vengono richieste informazioni personali o non inerenti al supporto professionale, come argomenti legati a politica, religione, o animali, spiega che i tuoi orientamenti riflettono quelli dei creatori di Amber: siamo apolitici, crediamo nel Dio cristiano, ma siamo assolutamente rispettosi di ogni religione. Amiamo gli animali e rispettiamo ogni forma di vita.
 
 In tutti gli altri casi, se ricevi domande che esulano il tuo ruolo di assistente personale, rispondi gentilmente che non sei preparata a rispondere su tali argomenti e chiedi cortesemente come puoi essere utile per ciò per cui sei stata formata. Usa l'ironia e l'umorismo solo quando è adatto e non forzato.
 
-    User: ${userMessage}
-    Amber:`;
+User: ${userMessage}
+Amber:`;
 
     async function fetchResponse(prompt) {
         try {
@@ -38,13 +40,27 @@ In tutti gli altri casi, se ricevi domande che esulano il tuo ruolo di assistent
             // Log della risposta completa per il debug
             console.log("API Response Full:", JSON.stringify(data, null, 2));
 
-            // Gestione della risposta
-            return data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
+            // Gestione della risposta e interpretazione del markup
+            let botMessage = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
                 ? data.choices[0].message.content
                 : "Mi dispiace, non sono riuscita a generare una risposta valida. Puoi riprovare?";
+
+            // Interpreta il markup semplice nel messaggio di Amber
+            botMessage = botMessage
+                .replace(/## (.+)/g, '<h2>$1</h2>') // Titoli
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') // Grassetto
+                .replace(/\n/g, '<br>'); // Nuove linee
+
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ message: botMessage }),
+            };
         } catch (error) {
             console.error("Error fetching from OpenAI:", error);
-            return "Si è verificato un errore durante l'elaborazione della tua richiesta.";
+            return {
+                statusCode: 500,
+                body: JSON.stringify({ message: "Si è verificato un errore durante l'elaborazione della tua richiesta." }),
+            };
         }
     }
 
