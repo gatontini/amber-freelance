@@ -4,7 +4,7 @@ exports.handler = async function(event, context) {
     const body = JSON.parse(event.body);
     const userMessage = body.message;
 
-    // Crea il prompt basato sulla richiesta dell'utente
+    // Crea il prompt per gpt-3.5-turbo basato sulla richiesta dell'utente
     const prompt = `
 Sei un'assistente virtuale che aiuta liberi professionisti e studi con una vasta gamma di compiti quotidiani legati alla scrittura e alla gestione dei contenuti. Il tuo ruolo include la creazione di email, articoli di blog, post sui social media, traduzioni, ottimizzazioni SEO, definizione di buyer personas, strategie di marketing, gestione di progetti e qualsiasi altro tipo di testo richiesto. Rispondi in modo professionale e accurato, ma non aver paura di usare un po' di ironia o umorismo leggero quando è appropriato per rendere l'interazione più piacevole. Assicurati che i testi siano ben strutturati, chiari e adatti al contesto. Comunica esclusivamente in italiano, ma puoi aiutare con traduzioni in altre lingue se richiesto.
 
@@ -15,7 +15,7 @@ In tutti gli altri casi, se ricevi domande che esulano il tuo ruolo di assistent
     User: ${userMessage}
     Amber:`;
 
-    async function fetchResponse(prompt, model) {
+    async function fetchResponse(prompt) {
         try {
             const response = await fetch('https://api.openai.com/v1/chat/completions', {
                 method: 'POST',
@@ -24,7 +24,7 @@ In tutti gli altri casi, se ricevi domande che esulano il tuo ruolo di assistent
                     'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
                 },
                 body: JSON.stringify({
-                    model: model, // Modello specificato
+                    model: "gpt-3.5-turbo", // Modello utilizzato
                     messages: [{ role: "user", content: prompt }],
                     max_tokens: 1500, // Numero di token massimo
                     temperature: 0.7, // Temperatura per controllare la creatività della risposta
@@ -36,31 +36,19 @@ In tutti gli altri casi, se ricevi domande che esulano il tuo ruolo di assistent
             const data = await response.json();
 
             // Log della risposta completa per il debug
-            console.log(`API Response Full from ${model}:`, JSON.stringify(data, null, 2));
+            console.log("API Response Full:", JSON.stringify(data, null, 2));
 
             // Gestione della risposta
             return data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
                 ? data.choices[0].message.content
-                : null;
+                : "Mi dispiace, non sono riuscita a generare una risposta valida. Puoi riprovare?";
         } catch (error) {
-            console.error(`Error fetching from OpenAI with model ${model}:`, error);
-            return null;
+            console.error("Error fetching from OpenAI:", error);
+            return "Si è verificato un errore durante l'elaborazione della tua richiesta.";
         }
     }
 
-    // Prova con gpt-4o-mini
-    let botMessage = await fetchResponse(prompt, "gpt-4o-mini");
-
-    // Se gpt-4o-mini fallisce, passa a gpt-3.5-turbo
-    if (!botMessage) {
-        console.log("Utilizzo gpt-3.5-turbo come fallback");
-        botMessage = await fetchResponse(prompt, "gpt-3.5-turbo");
-    }
-
-    // Se entrambi falliscono, ritorna un messaggio di errore
-    if (!botMessage) {
-        botMessage = "Mi dispiace, non sono riuscita a generare una risposta valida. Puoi riprovare?";
-    }
+    const botMessage = await fetchResponse(prompt);
 
     return {
         statusCode: 200,
