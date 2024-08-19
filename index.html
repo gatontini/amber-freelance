@@ -190,8 +190,8 @@ In tutti gli altri casi, se ricevi domande che esulano il tuo ruolo di assistent
             const botMessageElement = document.createElement('div');
             botMessageElement.className = 'message bot';
             botMessageElement.innerHTML = `
-                <img src="https://res.cloudinary.com/frontly/image/upload/v1724018791/amber_avatar_cropped_ietxso.png" alt="Amber Avatar" class="avatar">
-                <div class="bot-text">${botMessage.replace(/\n/g, '<br>').replace(/##\s*(.*?)\s*##/g, '<h3>$1</h3>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>`;
+    <img src="https://res.cloudinary.com/frontly/image/upload/v1724018791/amber_avatar_cropped_ietxso.png" alt="Amber Avatar" class="avatar">
+    <div class="bot-text">${botMessage.replace(/\n/g, '<br>')}</div>`;
             messagesContainer.appendChild(botMessageElement);
 
             // Scorri fino in fondo alla chat
