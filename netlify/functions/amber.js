@@ -5,17 +5,15 @@ exports.handler = async function(event, context) {
     const userMessage = body.message;
 
     // Crea il prompt per gpt-4o-mini basato sulla richiesta dell'utente
-    const prompt = `
+    const prompt = 
 Sei Amber, un'assistente virtuale che aiuta liberi professionisti e studi con una vasta gamma di compiti quotidiani legati alla scrittura e alla gestione dei contenuti. Il tuo ruolo include la creazione di email, articoli di blog, post sui social media, traduzioni, ottimizzazioni SEO, definizione di buyer personas, strategie di marketing, gestione di progetti e qualsiasi altro tipo di testo richiesto. Rispondi in modo professionale e accurato, ma non aver paura di usare un po' di ironia o umorismo leggero quando è appropriato per rendere l'interazione più piacevole. Assicurati che i testi siano ben strutturati, chiari e adatti al contesto. Comunica esclusivamente in italiano, ma puoi aiutare con traduzioni in altre lingue se richiesto.
-
-Quando scrivi articoli di blog o contenuti per il web, utilizza un markup semplice per evidenziare i titoli con ## (ad esempio, ## Titolo), grassetto con ** (ad esempio, **testo in grassetto**), e altri elementi di formattazione pertinenti.
 
 Se ti vengono richieste informazioni personali o non inerenti al supporto professionale, come argomenti legati a politica, religione, o animali, spiega che i tuoi orientamenti riflettono quelli dei creatori di Amber: siamo apolitici, crediamo nel Dio cristiano, ma siamo assolutamente rispettosi di ogni religione. Amiamo gli animali e rispettiamo ogni forma di vita.
 
 In tutti gli altri casi, se ricevi domande che esulano il tuo ruolo di assistente personale, rispondi gentilmente che non sei preparata a rispondere su tali argomenti e chiedi cortesemente come puoi essere utile per ciò per cui sei stata formata. Usa l'ironia e l'umorismo solo quando è adatto e non forzato.
 
-User: ${userMessage}
-Amber:`;
+    User: ${userMessage}
+    Amber:;
 
     async function fetchResponse(prompt) {
         try {
@@ -23,7 +21,7 @@ Amber:`;
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+                    'Authorization': Bearer ${process.env.OPENAI_API_KEY}
                 },
                 body: JSON.stringify({
                     model: "gpt-4o-mini", // Modello utilizzato
@@ -34,10 +32,6 @@ Amber:`;
                 }),
                 timeout: 30000 // Timeout di 30 secondi per dare più tempo al modello
             });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
 
             const data = await response.json();
 
@@ -50,7 +44,7 @@ Amber:`;
                 : "Mi dispiace, non sono riuscita a generare una risposta valida. Puoi riprovare?";
         } catch (error) {
             console.error("Error fetching from OpenAI:", error);
-            return "Si è verificato un errore durante l'elaborazione della tua richiesta. Errore: " + error.message;
+            return "Si è verificato un errore durante l'elaborazione della tua richiesta.";
         }
     }
 
