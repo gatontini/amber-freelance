@@ -1,7 +1,7 @@
 {
   "name": "amber-freelance",
   "version": "1.0.0",
-  "description": "Amber Freelance Assistant - Un assistente specializzato per liberi professionisti e studi, focalizzato su marketing, comunicazione e vendite.",
+  "description": "Freelance Assistant - Un assistente specializzato per liberi professionisti e studi, focalizzato su marketing, comunicazione e vendite.",
   "main": "index.js",
   "scripts": {
     "start": "netlify dev",
