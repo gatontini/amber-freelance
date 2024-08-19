@@ -25,10 +25,11 @@ exports.handler = async function(event, context) {
             body: JSON.stringify({
                 model: "gpt-4o-mini", // Modello utilizzato
                 messages: [{ role: "user", content: prompt }],
-                max_tokens: 800, // Aumenta il numero di token a 800
+                max_tokens: 800, // Numero di token massimo
                 temperature: 0.7, // Temperatura per controllare la creatività della risposta
                 top_p: 0.9 // Controlla la diversità delle risposte
-            })
+            }),
+            timeout: 10000 // Timeout di 10 secondi (puoi modificarlo se necessario)
         });
 
         const data = await response.json();
@@ -47,6 +48,8 @@ exports.handler = async function(event, context) {
         };
     } catch (error) {
         console.error("Error fetching from OpenAI:", error);
+
+        // Gestisci l'errore in modo appropriato
         return {
             statusCode: 500,
             body: JSON.stringify({ message: "Si è verificato un errore durante l'elaborazione della tua richiesta." }),
